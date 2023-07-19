@@ -1,36 +1,28 @@
 #!/usr/bin/env bash
-# configures a new HAproxy as a load balancer
+# Installing the load balancer
 
-# Install HAproxy on a server
-sudo apt-get -y update
-sudo apt-get -y install haproxy
-sudo chown -R "$USER:$USER" /etc/haproxy/
-
-<<<<<<< HEAD
-#configure the haproxy to forward requests to my two servers using the round-robin algorithm
-=======
-# Configure haproxy configuration file to distribute requests using a roundrobin algorithm
-server_config=\
+balancer="\
+frontend haproxy_balancer
+    bind *:80
+    mode http
+    default_backend webservers
+    
+backend webservers
+    balance roundrobin
+    server 194097-web-01 54.208.243.160:80 check
+    server 194097-web-2 54.146.11.238:80 check
 "
->>>>>>> 8f461505240e911665b4c795ab3e8e5e03a308a1
+# Update packages
+apt-get -y update
+apt-get -y upgrade
 
-frontend web-frontend
-        mode http
-        bind *:80
-        default_backend web-backend
+# Add HAProxy PPA
+apt-get -y install software-properties-common
+add-apt-repository -y ppa:vbernat/haproxy-2.5
+apt-get -y update
 
-backend web-backend
-        balance roundrobin
-        server 100804-web-01 100.26.165.61:80 check
-        server 100804-web-02 100.25.47.254:80 check
-<<<<<<< HEAD
-=======
-"
-echo "$server_config" | sudo tee -a /etc/haproxy/haproxy.cfg
-
-# enable haproxy to be started by init script
-echo "ENABLED=1" | sudo tee -a /etc/default/haproxy
->>>>>>> 8f461505240e911665b4c795ab3e8e5e03a308a1
-
-# Restart HAproxy service
-sudo service haproxy restart
+# Install HAProxy
+apt-get -y install haproxy
+cp -a /etc/haproxy/haproxy.cfg{,.orig}
+echo "$balancer" >> /etc/haproxy/haproxy.cfg
+service haproxy restart
