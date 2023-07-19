@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # Client configuration file
-Host default
-  HostName 52.90.14.246
-  User ubuntu
-  Port 22
-  PasswordAuthentication no
-  IdentityFile ~/.ssh/school
+Host 54.208.243.160
+    IdentityFile ~/.ssh/school
+    PreferredAuthentications publickey
+    PasswordAuthentication no
