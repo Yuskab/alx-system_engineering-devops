@@ -1,0 +1,2 @@
+# reset all workers of gunicorn server
+sudo pkill -HUP gunicorn
